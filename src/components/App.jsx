@@ -1,67 +1,61 @@
-import { Component } from 'react';
-import { nanoid } from 'nanoid';
-import ContactForm from './ContactForm/ContactForm';
-import ContactList from './ContactList/ContactList';
-import Filter from './Filter/Filter';
+import React, { Component } from 'react';
+import Statistics from './Statistics/Statistics';
+import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
+import Section from './Section/Section';
+import Notification from './Notification/Notification';
 
-class App extends Component {
+export class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-    filter: '',
+    good: 0,
+    neutral: 0,
+    bad: 0,
   };
 
-  addContact = ({ name, number }) => {
-    const { contacts } = this.state;
-    const newContact = { id: nanoid(), name, number };
+  countTotalFeedback() {
+    return this.state.good + this.state.neutral + this.state.bad;
+  }
 
-    contacts.find(contact => contact.name === name)
-      ? alert(`${name} is already in the contact list`)
-      : this.setState(({ contacts }) => ({
-          contacts: [newContact, ...contacts],
-        }));
-  };
+  countPositiveFeedbackPercentage() {
+    return Math.round((this.state.good / this.countTotalFeedback()) * 100);
+  }
 
-  changeFilter = event => {
-    this.setState({ filter: event.currentTarget.value });
-  };
-
-  getVisibleContacts = () => {
-    const { filter, contacts } = this.state;
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(({ name }) =>
-      name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-
-  deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+  onLeaveFeedback = e => {
+    const option = e.target.name;
+    console.log(option);
+    if (option) {
+      this.setState(prevState => ({
+        [option]: prevState[option] + 1,
+      }));
+    }
   };
 
   render() {
-    const visibleContacts = this.getVisibleContacts();
+    const options = Object.keys(this.state);
+    console.log(options);
 
     return (
       <div>
-        <ContactForm onSubmit={this.addContact} />
-        <h2> Contacts</h2>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={options}
+            onLeaveFeedback={this.onLeaveFeedback}
+          ></FeedbackOptions>
+        </Section>
 
-        <Filter value={this.state.filter} onChange={this.changeFilter} />
-
-        <ContactList
-          contacts={visibleContacts}
-          onDeleteContact={this.deleteContact}
-        />
+        <Section title="Statistics">
+          {this.countTotalFeedback() ? (
+            <Statistics
+              good={this.state.good}
+              neutral={this.state.neutral}
+              bad={this.state.bad}
+              total={this.countTotalFeedback()}
+              positivePercentage={this.countPositiveFeedbackPercentage()}
+            ></Statistics>
+          ) : (
+            <Notification message="There is no feedback"></Notification>
+          )}
+        </Section>
       </div>
     );
   }
 }
-
-export default App;

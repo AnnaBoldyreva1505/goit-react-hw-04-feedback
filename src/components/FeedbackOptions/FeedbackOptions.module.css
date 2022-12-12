@@ -1,0 +1,9 @@
+.btn {
+background-color: rgb(203, 226, 235);
+border: 1px solid rgb(140, 203, 229);
+border-radius: 3px;
+}
+
+.btn:not(:last-child){
+    margin-right: 10px;
+}

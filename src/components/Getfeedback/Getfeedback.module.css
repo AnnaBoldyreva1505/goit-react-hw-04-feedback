@@ -1,0 +1,16 @@
+.div {
+  margin: 0 auto;
+  background-color: red;
+  width: 320px;
+  padding: 10px;
+}
+
+.button {
+  background-color: #fff;
+}
+
+.button:not(:last-child) {
+  margin-right: 10px;
+  border-radius: 3px;
+  border: 1px solid grey;
+}
